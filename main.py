@@ -1,6 +1,8 @@
-from PyQt5 import QtCore, QtWidgets, uic
-import sys, gc
+import gc
+import sys
+
 import requests
+from PyQt5 import QtCore, QtWidgets, uic
 
 
 class CapControl():
@@ -45,6 +47,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.direction = None
         self.step = None
         self.speed = None
+        self.current_position = None
+        self.max_position = None
         self.initUI()
 
     def initUI(self):
@@ -61,12 +65,26 @@ class MainWindow(QtWidgets.QMainWindow):
             resp = requests.get(self.url + self.api_status)
             json = resp.json()
             if 'step_count' in json:
-                print(json['step_count'])
                 self.current_position_label.setText(str(json['step_count']))
+                self.current_position = int(json['step_count'])
+                self.max_position = int(json['max_position'])
+                self.fineTuning.setMaximum(self.max_position)
+                self.fineTuning.setValue(int(self.current_position))
             if 'status' in json:
                 self.statuslabel.setText(F"Статус: {json['status']}")
         else:
             self.statusbar.showMessage("Не з'єднано")
+        gc.collect()
+
+    def moveTo(self, dir, step, speed):
+        if self.connected:
+            json = {'dir': dir, 'step': step, 'speed': speed}
+            resp = requests.post(self.url + self.api_move, json=json)
+            json = resp.json()
+            if 'step_count' in json:
+                self.current_position_label.setText(str(json['step_count']))
+            if 'status' in json:
+                self.statuslabel.setText(F"Статус: {json['status']}")
 
     def setStylesheet(self, filename):
         with open(filename, "r") as fh:
@@ -92,29 +110,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.speed_comboBox.currentIndexChanged.connect(self.speed_change)
 
     def parkButton_click(self):
-        resp = requests.get(self.url + self.api_park)
-        json = resp.json()
-        if 'step_count' in json:
-            print(json['step_count'])
-            self.current_position_label.setText(str(json['step_count']))
-        if 'status' in json:
-            self.statuslabel.setText(F"Статус: {json['status']}")
-
-    def upButton_click(self):
         if self.connected:
-            json = {'dir': 0, 'step': self.step, 'speed': self.speed}
-            resp = requests.post(self.url + self.api_move, json=json)
-            json = resp.json()
-            if 'step_count' in json:
-                self.current_position_label.setText(str(json['step_count']))
-            if 'status' in json:
-                self.statuslabel.setText(F"Статус: {json['status']}")
-
-    def downButton_click(self):
-        if self.connected:
-            json = {'dir': 1, 'step': self.step, 'speed': self.speed}
-            print(json)
-            resp = requests.post(self.url + self.api_move, json=json)
+            resp = requests.get(self.url + self.api_park)
             json = resp.json()
             if 'step_count' in json:
                 print(json['step_count'])
@@ -122,8 +119,20 @@ class MainWindow(QtWidgets.QMainWindow):
             if 'status' in json:
                 self.statuslabel.setText(F"Статус: {json['status']}")
 
+    def upButton_click(self):
+        self.moveTo(0, self.step, self.speed)
+        self.fineTuning.setValue(int(self.current_position))
+
+    def downButton_click(self):
+        self.moveTo(1, self.step, self.speed)
+        self.fineTuning.setValue(int(self.current_position))
+
     def fineTune(self):
-        print(self.fineTuning.value())
+        if self.connected:
+            if self.fineTuning.value() > self.current_position:
+                self.moveTo(0, 1, 15)
+            else:
+                self.moveTo(1, 1, 15)
 
     def step_change(self):
         self.step = self.step_comboBox.currentText()
