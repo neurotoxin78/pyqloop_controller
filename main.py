@@ -10,7 +10,11 @@ class CapControl():
     def connect(self):
         return requests.get(self.url + "/settings")
 
-
+class VLine(QtWidgets.QFrame):
+    # a simple VLine, like the one you get from designer
+    def __init__(self):
+        super(VLine, self).__init__()
+        self.setFrameShape(self.VLine|self.Sunken)
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -18,7 +22,15 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         # Load the UI Page
         uic.loadUi('ui.ui', self)
+        self.setStylesheet("stylesheets/MacOs.qss")
+        self.statuslabel = QtWidgets.QLabel("Статус: ")
+        self.statuslabel.setStyleSheet('border: 0; color:  blue;')
         self.url = self.url_lineEdit.text()
+        self.statusbar.addPermanentWidget(self.statuslabel)
+        self.statusbar.reformat()
+        self.statusbar.setStyleSheet('border: 0; background-color: #FFF8DC;')
+        self.statusbar.setStyleSheet("QStatusBar::item {border: none;}")
+        #Variables
         self.api_move = "/move"
         self.api_park = "/park"
         self.cap_ctrl = CapControl(self.url)
@@ -37,6 +49,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.parkButton.clicked.connect(self.parkButton_click)
         self.comboInit()
         self.initVariables()
+
+    def setStylesheet(self, filename):
+        with open(filename, "r") as fh:
+            self.setStyleSheet(fh.read())
 
     def initVariables(self):
         self.step = self.step_comboBox.currentText()
@@ -62,7 +78,8 @@ class MainWindow(QtWidgets.QMainWindow):
             print(json['step_count'])
             self.current_position_label.setText(str(json['step_count']))
         if 'status' in json:
-            self.statusbar.showMessage(json['status'])
+            self.statuslabel.setText(F"Статус: {json['status']}")
+
 
     def upButton_click(self):
         if self.connected:
@@ -72,7 +89,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if 'step_count' in json:
                 self.current_position_label.setText(str(json['step_count']))
             if 'status' in json:
-                self.statusbar.showMessage(json['status'])
+                self.statuslabel.setText(F"Статус: {json['status']}")
 
 
     def downButton_click(self):
@@ -85,7 +102,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 print(json['step_count'])
                 self.current_position_label.setText(str(json['step_count']))
             if 'status' in json:
-                self.statusbar.showMessage(json['status'])
+                self.statuslabel.setText(F"Статус: {json['status']}")
 
     def fineTune(self):
         print(self.fineTuning.value())
