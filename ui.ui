@@ -45,7 +45,7 @@
      <item row="0" column="0">
       <widget class="QPushButton" name="upButton">
        <property name="text">
-        <string>Уверх</string>
+        <string>Збільшити</string>
        </property>
       </widget>
      </item>
@@ -109,7 +109,7 @@
      <item row="1" column="0">
       <widget class="QPushButton" name="downButton">
        <property name="text">
-        <string>Униз</string>
+        <string>Зменшити</string>
        </property>
       </widget>
      </item>
@@ -225,10 +225,10 @@
     <widget class="QPushButton" name="connectButton">
      <property name="geometry">
       <rect>
-       <x>190</x>
-       <y>37</y>
+       <x>220</x>
+       <y>35</y>
        <width>71</width>
-       <height>26</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
@@ -240,7 +240,7 @@
       <rect>
        <x>50</x>
        <y>40</y>
-       <width>131</width>
+       <width>161</width>
        <height>22</height>
       </rect>
      </property>
@@ -261,17 +261,17 @@
       <string>URL:</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="park_Button">
+    <widget class="QPushButton" name="parkButton">
      <property name="geometry">
       <rect>
        <x>310</x>
        <y>35</y>
        <width>93</width>
-       <height>26</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Паркування</string>
+      <string>Паркувати</string>
      </property>
     </widget>
    </widget>

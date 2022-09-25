@@ -10,9 +10,6 @@ class CapControl():
     def connect(self):
         return requests.get(self.url + "/settings")
 
-    def get_move(self, dir, step, speed):
-        req = F"dir : {dir}, step : {step}, speed {speed}"
-        return requests.post(self.url, json=req)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -21,24 +18,31 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         # Load the UI Page
         uic.loadUi('ui.ui', self)
-        self.initUI()
         self.url = self.url_lineEdit.text()
+        self.api_move = "/move"
+        self.api_park = "/park"
         self.cap_ctrl = CapControl(self.url)
         self.connected = False
         self.direction = None
         self.step = None
         self.speed = None
+        self.initUI()
+
 
     def initUI(self):
         self.upButton.clicked.connect(self.upButton_click)
         self.downButton.clicked.connect(self.downButton_click)
         self.connectButton.clicked.connect(self.connectButton_click)
         self.fineTuning.valueChanged.connect(self.fineTune)
+        self.parkButton.clicked.connect(self.parkButton_click)
         self.comboInit()
+        self.initVariables()
+
+    def initVariables(self):
+        self.step = self.step_comboBox.currentText()
+        self.speed = self.speed_comboBox.currentText()
 
     def comboInit(self):
-        self.step_comboBox.addItem("1")
-        self.step_comboBox.addItem("5")
         self.step_comboBox.addItem("10")
         self.step_comboBox.addItem("25")
         self.step_comboBox.addItem("50")
@@ -46,25 +50,51 @@ class MainWindow(QtWidgets.QMainWindow):
         self.step_comboBox.addItem("250")
         self.step_comboBox.addItem("500")
         self.step_comboBox.currentIndexChanged.connect(self.step_change)
-        self.speed_comboBox.addItem("Low")
-        self.speed_comboBox.addItem("Normal")
-        self.speed_comboBox.addItem("High")
+        self.speed_comboBox.addItem("5")
+        self.speed_comboBox.addItem("10")
+        self.speed_comboBox.addItem("16")
         self.speed_comboBox.currentIndexChanged.connect(self.speed_change)
 
+    def parkButton_click(self):
+        resp = requests.get(self.url + self.api_park)
+        json = resp.json()
+        if 'step_count' in json:
+            print(json['step_count'])
+            self.current_position_label.setText(str(json['step_count']))
+        if 'status' in json:
+            self.statusbar.showMessage(json['status'])
+
     def upButton_click(self):
-        print("Up")
+        if self.connected:
+            json = {'dir': 0, 'step': self.step, 'speed': self.speed}
+            resp = requests.post(self.url + self.api_move, json=json)
+            json = resp.json()
+            if 'step_count' in json:
+                self.current_position_label.setText(str(json['step_count']))
+            if 'status' in json:
+                self.statusbar.showMessage(json['status'])
+
 
     def downButton_click(self):
-        print("Down")
+        if self.connected:
+            json = {'dir': 1, 'step': self.step, 'speed': self.speed}
+            print(json)
+            resp = requests.post(self.url + self.api_move, json=json)
+            json = resp.json()
+            if 'step_count' in json:
+                print(json['step_count'])
+                self.current_position_label.setText(str(json['step_count']))
+            if 'status' in json:
+                self.statusbar.showMessage(json['status'])
 
     def fineTune(self):
         print(self.fineTuning.value())
 
     def step_change(self):
-        print(self.step_comboBox.currentText())
+        self.step = self.step_comboBox.currentText()
 
     def speed_change(self):
-        print(self.speed_comboBox.currentText())
+        self.speed = self.speed_comboBox.currentText()
 
     def connectButton_click(self):
         json = self.cap_ctrl.connect().json()
