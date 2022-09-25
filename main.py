@@ -60,7 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.comboInit()
         self.initVariables()
 
-    def mainTimer(self):
+    def get_info(self):
         if self.connected:
             resp = requests.get(self.url + self.api_status)
             json = resp.json()
@@ -74,6 +74,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.statuslabel.setText(F"Статус: {json['status']}")
         else:
             self.statusbar.showMessage("Не з'єднано")
+
+    def mainTimer(self):
         gc.collect()
 
     def moveTo(self, dir, step, speed):
@@ -145,6 +147,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if 'ip' in json:
             self.statusbar.showMessage(json['ip'] + " з'єднано")
             self.connected = True
+            self.get_info()
         else:
             self.statusbar.showMessage("Error: No API found, check URI")
             self.connected = False
