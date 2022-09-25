@@ -10,11 +10,13 @@ class CapControl():
     def connect(self):
         return requests.get(self.url + "/settings")
 
+
 class VLine(QtWidgets.QFrame):
     # a simple VLine, like the one you get from designer
     def __init__(self):
         super(VLine, self).__init__()
-        self.setFrameShape(self.VLine|self.Sunken)
+        self.setFrameShape(self.VLine | self.Sunken)
+
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -22,7 +24,6 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         # Load the UI Page
         uic.loadUi('ui.ui', self)
-        self.setStylesheet("stylesheets/MacOs.qss")
         self.statuslabel = QtWidgets.QLabel("Статус: ")
         self.statuslabel.setStyleSheet('border: 0; color:  blue;')
         self.url = self.url_lineEdit.text()
@@ -30,16 +31,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statusbar.reformat()
         self.statusbar.setStyleSheet('border: 0; background-color: #FFF8DC;')
         self.statusbar.setStyleSheet("QStatusBar::item {border: none;}")
-        #Variables
+        self.setStylesheet("stylesheets/MacOs.qss")
+        # Main Timer
+        self.main_Timer = QtCore.QTimer()
+        self.main_Timer.timeout.connect(self.mainTimer)
+        self.main_Timer.start(5000)
+        # Variables
         self.api_move = "/move"
         self.api_park = "/park"
+        self.api_status = "/status"
         self.cap_ctrl = CapControl(self.url)
         self.connected = False
         self.direction = None
         self.step = None
         self.speed = None
         self.initUI()
-
 
     def initUI(self):
         self.upButton.clicked.connect(self.upButton_click)
@@ -49,6 +55,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.parkButton.clicked.connect(self.parkButton_click)
         self.comboInit()
         self.initVariables()
+
+    def mainTimer(self):
+        if self.connected:
+            resp = requests.get(self.url + self.api_status)
+            json = resp.json()
+            if 'step_count' in json:
+                print(json['step_count'])
+                self.current_position_label.setText(str(json['step_count']))
+            if 'status' in json:
+                self.statuslabel.setText(F"Статус: {json['status']}")
+        else:
+            self.statusbar.showMessage("Не з'єднано")
 
     def setStylesheet(self, filename):
         with open(filename, "r") as fh:
@@ -65,10 +83,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.step_comboBox.addItem("100")
         self.step_comboBox.addItem("250")
         self.step_comboBox.addItem("500")
+        self.step_comboBox.setCurrentIndex(3)
         self.step_comboBox.currentIndexChanged.connect(self.step_change)
         self.speed_comboBox.addItem("5")
         self.speed_comboBox.addItem("10")
         self.speed_comboBox.addItem("16")
+        self.speed_comboBox.setCurrentIndex(1)
         self.speed_comboBox.currentIndexChanged.connect(self.speed_change)
 
     def parkButton_click(self):
@@ -80,7 +100,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if 'status' in json:
             self.statuslabel.setText(F"Статус: {json['status']}")
 
-
     def upButton_click(self):
         if self.connected:
             json = {'dir': 0, 'step': self.step, 'speed': self.speed}
@@ -90,7 +109,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.current_position_label.setText(str(json['step_count']))
             if 'status' in json:
                 self.statuslabel.setText(F"Статус: {json['status']}")
-
 
     def downButton_click(self):
         if self.connected:
@@ -116,7 +134,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def connectButton_click(self):
         json = self.cap_ctrl.connect().json()
         if 'ip' in json:
-            self.statusbar.showMessage(json['ip'] + ' connected')
+            self.statusbar.showMessage(json['ip'] + " з'єднано")
             self.connected = True
         else:
             self.statusbar.showMessage("Error: No API found, check URI")
