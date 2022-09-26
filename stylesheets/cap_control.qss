@@ -1,36 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>430</width>
-    <height>600</height>
-   </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>430</width>
-    <height>600</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>800</width>
-    <height>600</height>
-   </size>
-  </property>
-  <property name="windowTitle">
-   <string>MagLoop Controller</string>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">
+/*Copyright (c) DevSec Studio. All rights reserved.
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 /*-----QWidget-----*/
 QWidget
 {
-	background-color:rgb(107, 107, 107);
+	background-color: #242424;
 	color: #fff;
 	selection-background-color: #fff;
 	selection-color: #000;
@@ -168,7 +161,7 @@ QToolButton:checked
 /*-----QPushButton-----*/
 QPushButton
 {
-	background-color: rgb(85, 170, 255);
+	background-color: #4891b4;
 	color: #fff;
 	min-width: 80px;
 	border-radius: 4px;
@@ -222,7 +215,7 @@ QPushButton::checked
 /*-----QLineEdit-----*/
 QLineEdit
 {
-	background-color: rgb(80, 80, 80);
+	background-color: #242424;
 	color : #fff;
 	border: 1px solid #1d1d1d;
 	padding: 3px;
@@ -330,7 +323,7 @@ QComboBox::down-arrow
 }
 
 
-/*-----QDoubleSpinBox &amp; QCalendarWidget-----*/
+/*-----QDoubleSpinBox & QCalendarWidget-----*/
 QDoubleSpinBox,
 QCalendarWidget QSpinBox 
 {
@@ -437,7 +430,7 @@ QGroupBox
 
 QGroupBox::title  
 {
-    background-color: rgb(55, 111, 166);
+    background-color: #002b2b;
     color: #fff;
 	subcontrol-position: top left;
     subcontrol-origin: margin;
@@ -703,7 +696,7 @@ QCheckBox::indicator
 
 QCheckBox::indicator:checked
 {
-    image:url(&quot;./ressources/check.png&quot;);
+    image:url("./ressources/check.png");
 	background-color: #002b2b;
     border: 1px solid #3a546e;
 
@@ -994,299 +987,7 @@ QStatusBar
 /*-----QSizeGrip-----*/
 QSizeGrip 
 {
-	background-color: image(&quot;./ressources/sizegrip.png&quot;); /*To replace*/
+	background-color: image("./ressources/sizegrip.png"); /*To replace*/
 	border: none;
 
 }
-</string>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <widget class="QGroupBox" name="manualGroup">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>410</width>
-      <height>144</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Ручне налаштування</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="3">
-      <widget class="QComboBox" name="speed_comboBox"/>
-     </item>
-     <item row="0" column="0">
-      <widget class="QPushButton" name="upButton">
-       <property name="text">
-        <string>Збільшити</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="steplabel">
-       <property name="text">
-        <string>Кроки</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="4" rowspan="4">
-      <widget class="QGroupBox" name="finetuningGroup">
-       <property name="title">
-        <string>Точне налаштування</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QDial" name="fineTuning">
-          <property name="maximum">
-           <number>1024</number>
-          </property>
-          <property name="tracking">
-           <bool>false</bool>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="invertedAppearance">
-           <bool>false</bool>
-          </property>
-          <property name="invertedControls">
-           <bool>false</bool>
-          </property>
-          <property name="wrapping">
-           <bool>false</bool>
-          </property>
-          <property name="notchTarget">
-           <double>26.000000000000000</double>
-          </property>
-          <property name="notchesVisible">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="downButton">
-       <property name="text">
-        <string>Зменшити</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLabel" name="speedlabel">
-       <property name="text">
-        <string>Швидкість</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QComboBox" name="step_comboBox">
-       <property name="frame">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Поточна позиція:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="current_position_label">
-       <property name="text">
-        <string>0</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QGroupBox" name="bandGroup">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>155</y>
-      <width>411</width>
-      <height>296</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Діапазони</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <widget class="QTreeView" name="bandtreeView">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>20</y>
-       <width>391</width>
-       <height>231</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="addButton">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>260</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Додати</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="editButton">
-     <property name="geometry">
-      <rect>
-       <x>155</x>
-       <y>260</y>
-       <width>101</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Редагувати</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="deleteButton">
-     <property name="geometry">
-      <rect>
-       <x>310</x>
-       <y>260</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Видалити</string>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QGroupBox" name="connect_groupBox">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>450</y>
-      <width>411</width>
-      <height>86</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Підключення</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <widget class="QPushButton" name="connectButton">
-     <property name="geometry">
-      <rect>
-       <x>220</x>
-       <y>35</y>
-       <width>90</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>З'єднати</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="url_lineEdit">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>40</y>
-       <width>161</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_2">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>31</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>URL:</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="parkButton">
-     <property name="geometry">
-      <rect>
-       <x>313</x>
-       <y>35</y>
-       <width>90</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Паркувати</string>
-     </property>
-    </widget>
-   </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>430</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>Файл</string>
-    </property>
-    <addaction name="action"/>
-   </widget>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>Допомога</string>
-    </property>
-    <addaction name="action_MagLoop_Control"/>
-   </widget>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <action name="action">
-   <property name="text">
-    <string>Вихід</string>
-   </property>
-  </action>
-  <action name="action_MagLoop_Control">
-   <property name="text">
-    <string>Про MagLoop Control</string>
-   </property>
-  </action>
- </widget>
- <resources/>
- <connections/>
-</ui>

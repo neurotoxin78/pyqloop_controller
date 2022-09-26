@@ -1,17 +1,38 @@
 import gc
 import sys
-
+import json as jconf
 import requests
 from PyQt5 import QtCore, QtWidgets, uic
 
 
+
+def extended_exception_hook(exctype, value, traceback):
+    # Print the error and traceback
+    print(exctype, value, traceback)
+    # Call the normal Exception hook after
+    sys._excepthook(exctype, value, traceback)
+    sys.exit(1)
+
+class Jconfig():
+    def __init__(self):
+        pass
+
+    def get_config(self):
+        try:
+            with open("config.json", "r") as f:
+                config = jconf.load(f)
+            return config
+        except:
+            raise FileNotFoundError("File config.json not found.")
+
 class CapControl():
-    def __init__(self, url):
-        self.url = url
+    def __init__(self):
+        pass
 
-    def connect(self):
-        return requests.get(self.url + "/settings")
-
+    def connect(self, url):
+        # Реалізувати обробку помилки
+        req = requests.get(url + "/settings")
+        return req
 
 class VLine(QtWidgets.QFrame):
     # a simple VLine, like the one you get from designer
@@ -27,30 +48,40 @@ class MainWindow(QtWidgets.QMainWindow):
         # Load the UI Page
         uic.loadUi('ui.ui', self)
         self.statuslabel = QtWidgets.QLabel("Статус: ")
-        self.statuslabel.setStyleSheet('border: 0; color:  blue;')
-        self.url = self.url_lineEdit.text()
         self.statusbar.addPermanentWidget(self.statuslabel)
         self.statusbar.reformat()
-        self.statusbar.setStyleSheet('border: 0; background-color: #FFF8DC;')
-        self.statusbar.setStyleSheet("QStatusBar::item {border: none;}")
-        self.setStylesheet("stylesheets/MacOs.qss")
+        # self.setStylesheet("stylesheets/cap_control.qss")
         # Main Timer
         self.main_Timer = QtCore.QTimer()
         self.main_Timer.timeout.connect(self.mainTimer)
         self.main_Timer.start(5000)
         # Variables
-        self.api_move = "/move"
-        self.api_park = "/park"
-        self.api_status = "/status"
-        self.cap_ctrl = CapControl(self.url)
+        self.jconfig = Jconfig()
         self.connected = False
         self.direction = None
         self.step = None
         self.speed = None
         self.current_position = None
         self.max_position = None
+        self.api_status = None
+        self.api_park = None
+        self.api_move = None
+        self.url = None
         self.initUI()
+        self.configure()
 
+    def configure(self):
+        config = self.jconfig.get_config()
+        if "api" in config:
+            api = config["api"]
+            self.url = api["url"]
+            self.api_move = api["move"]
+            self.api_park = api["park"]
+            self.api_status = api["status"]
+            self.url_lineEdit.setText(self.url)
+            self.cap_ctrl = CapControl()
+        else:
+            raise KeyError("Error: Key 'api' not found in config file.")
     def initUI(self):
         self.upButton.clicked.connect(self.upButton_click)
         self.downButton.clicked.connect(self.downButton_click)
@@ -58,7 +89,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fineTuning.valueChanged.connect(self.fineTune)
         self.parkButton.clicked.connect(self.parkButton_click)
         self.comboInit()
-        self.initVariables()
+        self.step = self.step_comboBox.currentText()
+        self.speed = self.speed_comboBox.currentText()
 
     def get_info(self):
         if self.connected:
@@ -91,10 +123,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def setStylesheet(self, filename):
         with open(filename, "r") as fh:
             self.setStyleSheet(fh.read())
-
-    def initVariables(self):
-        self.step = self.step_comboBox.currentText()
-        self.speed = self.speed_comboBox.currentText()
 
     def comboInit(self):
         self.step_comboBox.addItem("10")
@@ -143,7 +171,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.speed = self.speed_comboBox.currentText()
 
     def connectButton_click(self):
-        json = self.cap_ctrl.connect().json()
+        self.url = self.url_lineEdit.text()
+        json = self.cap_ctrl.connect(self.url).json()
         if 'ip' in json:
             self.statusbar.showMessage(json['ip'] + " з'єднано")
             self.connected = True
@@ -159,6 +188,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 def main():
+    sys._excepthook = sys.excepthook
+    sys.excepthook = extended_exception_hook
     app = QtWidgets.QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
