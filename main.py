@@ -5,7 +5,8 @@ import requests
 from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtCore import (QDate, QDateTime, QRegExp, QSortFilterProxyModel, Qt,
-QTime)
+                          QTime)
+
 
 def extended_exception_hook(exctype, value, traceback):
     # Print the error and traceback
@@ -13,6 +14,24 @@ def extended_exception_hook(exctype, value, traceback):
     # Call the normal Exception hook after
     sys._excepthook(exctype, value, traceback)
     sys.exit(1)
+
+
+class AddDialog(QtWidgets.QDialog):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi('add_dialog.ui', self)
+
+    def set_fields_values(self, band, step, desc):
+        self.bandlineEdit.setText(band)
+        self.steplineEdit.setText(step)
+        self.desclineEdit.setText(desc)
+
+    def get_fields_values(self):
+        band = self.bandlineEdit.text()
+        step = self.steplineEdit.text()
+        desc = self.desclineEdit.text()
+        return {"band": band, "step" : step, "desc" : desc}
+
 
 class Jconfig():
     def __init__(self):
@@ -25,6 +44,7 @@ class Jconfig():
             return config
         except:
             raise FileNotFoundError("File config.json not found.")
+
     def get_defaults(self):
         try:
             with open("stored_defaults.json", "r") as f:
@@ -32,6 +52,7 @@ class Jconfig():
             return config
         except:
             raise FileNotFoundError("File config.json not found.")
+
 
 class CapControl():
     def __init__(self):
@@ -42,6 +63,7 @@ class CapControl():
         req = requests.get(url + "/settings")
         return req
 
+
 class VLine(QtWidgets.QFrame):
     # a simple VLine, like the one you get from designer
     def __init__(self):
@@ -51,6 +73,7 @@ class VLine(QtWidgets.QFrame):
 
 class MainWindow(QtWidgets.QMainWindow):
     BAND, STEPS, DESCRIPTION = range(3)
+
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         # Load the UI Page
@@ -59,6 +82,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statusbar.addPermanentWidget(self.statuslabel)
         self.statusbar.reformat()
         self.setStylesheet("stylesheets/cap_control.qss")
+        self.add_dialog = AddDialog()
         # Main Timer
         self.main_Timer = QtCore.QTimer()
         self.main_Timer.timeout.connect(self.mainTimer)
@@ -80,9 +104,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.configure()
         self.bandTreeViewConfig()
 
-
     def store_defaults(self):
-        defaults = {"defaults" : {"step" : self.step, "speed" : self.speed}}
+        defaults = {"defaults": {"step": self.step, "speed": self.speed}}
         defaults = jconf.dumps(defaults, indent=4)
         jsondefs = jconf.loads(defaults)
         try:
@@ -121,14 +144,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandtreeView.setModel(model)
         self.addTreeItem(model, '40M', '8500', '7,000 - 7,200')
 
-    def createBandTreeModel(self,parent):
+    def createBandTreeModel(self, parent):
         model = QStandardItemModel(0, 3, parent)
         model.setHeaderData(self.BAND, Qt.Horizontal, "Діапазон")
         model.setHeaderData(self.STEPS, Qt.Horizontal, "Кроки")
         model.setHeaderData(self.DESCRIPTION, Qt.Horizontal, "Опис")
         return model
 
-    def addTreeItem(self,model, band, steps, desc):
+    def addTreeItem(self, model, band, steps, desc):
         model.insertRow(0)
         model.setData(model.index(0, self.BAND), band)
         model.setData(model.index(0, self.STEPS), steps)
@@ -140,9 +163,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.connectButton.clicked.connect(self.connectButton_click)
         self.fineTuning.valueChanged.connect(self.fineTune)
         self.parkButton.clicked.connect(self.parkButton_click)
+        self.addButton.clicked.connect(self.addButton_click)
         self.comboInit()
-        #self.step = self.step_comboBox.currentText()
-        #self.speed = self.speed_comboBox.currentText()
+
+    def addButton_click(self):
+        self.add_dialog.set_fields_values("Діапазон", self.current_position_label.text(), "")
+        answer = self.add_dialog.exec()
+        if answer == AddDialog.Accepted:
+            print(self.add_dialog.get_fields_values())
+        else:
+            print("Cancel")
+
+
 
     def get_info(self):
         if self.connected:
