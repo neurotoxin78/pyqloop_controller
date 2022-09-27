@@ -3,8 +3,9 @@ import sys
 import json as jconf
 import requests
 from PyQt5 import QtCore, QtWidgets, uic
-
-
+from PyQt5.QtGui import QStandardItemModel
+from PyQt5.QtCore import (QDate, QDateTime, QRegExp, QSortFilterProxyModel, Qt,
+QTime)
 
 def extended_exception_hook(exctype, value, traceback):
     # Print the error and traceback
@@ -19,7 +20,7 @@ class Jconfig():
 
     def get_config(self):
         try:
-            with open("config.json", "r") as f:
+            with open("api.json", "r") as f:
                 config = jconf.load(f)
             return config
         except:
@@ -42,7 +43,7 @@ class VLine(QtWidgets.QFrame):
 
 
 class MainWindow(QtWidgets.QMainWindow):
-
+    BAND, STEPS, DESCRIPTION = range(3)
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         # Load the UI Page
@@ -50,7 +51,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statuslabel = QtWidgets.QLabel("Статус: ")
         self.statusbar.addPermanentWidget(self.statuslabel)
         self.statusbar.reformat()
-        # self.setStylesheet("stylesheets/cap_control.qss")
+        self.setStylesheet("stylesheets/cap_control.qss")
         # Main Timer
         self.main_Timer = QtCore.QTimer()
         self.main_Timer.timeout.connect(self.mainTimer)
@@ -67,8 +68,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.api_park = None
         self.api_move = None
         self.url = None
+        self.cap_ctrl = CapControl()
         self.initUI()
         self.configure()
+        self.bandTreeViewConfig()
 
     def configure(self):
         config = self.jconfig.get_config()
@@ -79,9 +82,29 @@ class MainWindow(QtWidgets.QMainWindow):
             self.api_park = api["park"]
             self.api_status = api["status"]
             self.url_lineEdit.setText(self.url)
-            self.cap_ctrl = CapControl()
         else:
             raise KeyError("Error: Key 'api' not found in config file.")
+
+    def bandTreeViewConfig(self):
+        self.bandtreeView.setRootIsDecorated(False)
+        self.bandtreeView.setAlternatingRowColors(True)
+        model = self.createBandTreeModel(self)
+        self.bandtreeView.setModel(model)
+        self.addTreeItem(model, '40M', '8500', '7,000 - 7,200')
+
+    def createBandTreeModel(self,parent):
+        model = QStandardItemModel(0, 3, parent)
+        model.setHeaderData(self.BAND, Qt.Horizontal, "Діапазон")
+        model.setHeaderData(self.STEPS, Qt.Horizontal, "Кроки")
+        model.setHeaderData(self.DESCRIPTION, Qt.Horizontal, "Опис")
+        return model
+
+    def addTreeItem(self,model, band, steps, desc):
+        model.insertRow(0)
+        model.setData(model.index(0, self.BAND), band)
+        model.setData(model.index(0, self.STEPS), steps)
+        model.setData(model.index(0, self.DESCRIPTION), desc)
+
     def initUI(self):
         self.upButton.clicked.connect(self.upButton_click)
         self.downButton.clicked.connect(self.downButton_click)

@@ -1,29 +1,8 @@
-/*Copyright (c) DevSec Studio. All rights reserved.
-
-MIT License
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
 
 /*-----QWidget-----*/
 QWidget
 {
-	background-color: #242424;
+	background-color:rgb(107, 107, 107);
 	color: #fff;
 	selection-background-color: #fff;
 	selection-color: #000;
@@ -161,7 +140,7 @@ QToolButton:checked
 /*-----QPushButton-----*/
 QPushButton
 {
-	background-color: #4891b4;
+	background-color:rgb(255, 150, 0);
 	color: #fff;
 	min-width: 80px;
 	border-radius: 4px;
@@ -190,15 +169,15 @@ QPushButton::disabled
 
 QPushButton::hover
 {
-	background-color: #54aad3;
-	border: 1px solid #46a2da;
+	background-color:rgb(255, 150, 0);
+	border: 2px solid rgb(255, 106, 0);
 
 }
 
 
 QPushButton::pressed
 {
-	background-color: #2385b4;
+	background-color: rgb(255, 110, 0);
 	border: 1px solid #46a2da;
 
 }
@@ -215,7 +194,7 @@ QPushButton::checked
 /*-----QLineEdit-----*/
 QLineEdit
 {
-	background-color: #242424;
+	background-color: rgb(80, 80, 80);
 	color : #fff;
 	border: 1px solid #1d1d1d;
 	padding: 3px;
@@ -421,22 +400,22 @@ QCalendarWidget QSpinBox::down-arrow
 QGroupBox 
 {
     border: 1px solid;
-    border-color: #1d1d1d;
+    border-color: rgb(65, 77, 85);
 	border-radius: 4px;
-    margin-top: 23px;
+    margin-top: 16px;
 
 }
 
 
 QGroupBox::title  
 {
-    background-color: #002b2b;
+    background-color: rgb(68, 84, 97);
     color: #fff;
-	subcontrol-position: top left;
+	subcontrol-position: top center;
     subcontrol-origin: margin;
     padding: 5px;
-	min-width: 100px;
-	border: 1px solid #1d1d1d;
+	min-width: 85px;
+	border: 1px solid rgb(43, 87, 130);
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
 	border-bottom: none;
@@ -569,7 +548,7 @@ QTreeView
 	background-color: transparent;
    	border: none;
 	color: #fff;
-	font: 8pt;
+	font: 10pt;
 
 }
 
@@ -577,8 +556,8 @@ QTreeView
 QTreeView::item:selected
 {
 	color:#fff;
-	background-color: #002b2b;
-	border-radius: 0px;
+	background-color: rgb(140, 140, 140);
+	border-radius: 4px;
 
 }
 
