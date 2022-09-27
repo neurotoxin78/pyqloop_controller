@@ -88,7 +88,6 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             with open("stored_defaults.json", "w") as f:
                 jconf.dump(jsondefs, f)
-                print(jsondefs)
         except:
             raise FileNotFoundError("File stored_defaults.json not found.")
 
@@ -113,7 +112,7 @@ class MainWindow(QtWidgets.QMainWindow):
             speed_index = self.speed_comboBox.findText(self.speed)
             self.speed_comboBox.setCurrentIndex(speed_index)
         else:
-            raise KeyError("Error: Key 'api' not found in config file.")
+            raise KeyError("Error: Key 'defaults' not found in config file.")
 
     def bandTreeViewConfig(self):
         self.bandtreeView.setRootIsDecorated(False)
