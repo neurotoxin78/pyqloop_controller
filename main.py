@@ -112,8 +112,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.step_comboBox.setCurrentIndex(step_index)
             speed_index = self.speed_comboBox.findText(self.speed)
             self.speed_comboBox.setCurrentIndex(speed_index)
-
-
         else:
             raise KeyError("Error: Key 'api' not found in config file.")
 
