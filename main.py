@@ -73,6 +73,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.configure()
         self.bandTreeViewConfig()
 
+
+    def store_defaults(self):
+        defaults = {"defaults" : {"step" : self.step, "speed" : self.speed}}
+        defaults = jconf.dumps(defaults, indent=4)
+        jsondefs = jconf.loads(defaults)
+        try:
+            with open("stored_defaults.json", "w") as f:
+                jconf.dump(jsondefs, f)
+                print(jsondefs)
+        except:
+            raise FileNotFoundError("File stored_defaults.json not found.")
+
     def configure(self):
         config = self.jconfig.get_config()
         if "api" in config:
@@ -206,6 +218,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         print("Closing")
+        self.store_defaults()
+        print("Storing defaults")
         event.accept()
         sys.exit()
 
