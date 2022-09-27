@@ -25,6 +25,13 @@ class Jconfig():
             return config
         except:
             raise FileNotFoundError("File config.json not found.")
+    def get_defaults(self):
+        try:
+            with open("stored_defaults.json", "r") as f:
+                config = jconf.load(f)
+            return config
+        except:
+            raise FileNotFoundError("File config.json not found.")
 
 class CapControl():
     def __init__(self):
@@ -96,6 +103,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.url_lineEdit.setText(self.url)
         else:
             raise KeyError("Error: Key 'api' not found in config file.")
+        defaults = self.jconfig.get_defaults()
+        if "defaults" in defaults:
+            d = defaults["defaults"]
+            self.step = d["step"]
+            self.speed = d["speed"]
+            step_index = self.step_comboBox.findText(self.step)
+            self.step_comboBox.setCurrentIndex(step_index)
+            speed_index = self.speed_comboBox.findText(self.speed)
+            self.speed_comboBox.setCurrentIndex(speed_index)
+
+
+        else:
+            raise KeyError("Error: Key 'api' not found in config file.")
 
     def bandTreeViewConfig(self):
         self.bandtreeView.setRootIsDecorated(False)
@@ -124,8 +144,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fineTuning.valueChanged.connect(self.fineTune)
         self.parkButton.clicked.connect(self.parkButton_click)
         self.comboInit()
-        self.step = self.step_comboBox.currentText()
-        self.speed = self.speed_comboBox.currentText()
+        #self.step = self.step_comboBox.currentText()
+        #self.speed = self.speed_comboBox.currentText()
 
     def get_info(self):
         if self.connected:
@@ -160,18 +180,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setStyleSheet(fh.read())
 
     def comboInit(self):
-        self.step_comboBox.addItem("10")
-        self.step_comboBox.addItem("25")
-        self.step_comboBox.addItem("50")
-        self.step_comboBox.addItem("100")
-        self.step_comboBox.addItem("250")
-        self.step_comboBox.addItem("500")
-        self.step_comboBox.setCurrentIndex(3)
+        step_items = ["1", "5", "10", "25", "50", "100", "250", "500"]
+        speed_items = ["5", "10", "16"]
+        self.step_comboBox.addItems(step_items)
         self.step_comboBox.currentIndexChanged.connect(self.step_change)
-        self.speed_comboBox.addItem("5")
-        self.speed_comboBox.addItem("10")
-        self.speed_comboBox.addItem("16")
-        self.speed_comboBox.setCurrentIndex(1)
+        self.speed_comboBox.addItems(speed_items)
         self.speed_comboBox.currentIndexChanged.connect(self.speed_change)
 
     def parkButton_click(self):
