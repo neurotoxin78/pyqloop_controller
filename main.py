@@ -220,8 +220,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.current_position_label.setText(str(json['step_count']))
                 self.current_position = int(json['step_count'])
                 self.max_position = int(json['max_position'])
-                self.fineTuning.setMaximum(self.max_position)
-                self.fineTuning.setValue(int(self.current_position))
             if 'status' in json:
                 self.statuslabel.setText(F"Статус: {json['status']}")
         else:
