@@ -18,7 +18,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>800</width>
+    <width>430</width>
     <height>600</height>
    </size>
   </property>
@@ -52,88 +52,54 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="4" rowspan="4">
-      <widget class="QGroupBox" name="finetuningGroup">
-       <property name="title">
-        <string>Покроково</string>
+     <item row="5" column="2">
+      <widget class="QLabel" name="current_position_label">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>0</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
-       <property name="flat">
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QComboBox" name="step_comboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frame">
         <bool>false</bool>
        </property>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QDial" name="fineTuning">
-          <property name="maximum">
-           <number>1024</number>
-          </property>
-          <property name="tracking">
-           <bool>false</bool>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="invertedAppearance">
-           <bool>false</bool>
-          </property>
-          <property name="invertedControls">
-           <bool>false</bool>
-          </property>
-          <property name="wrapping">
-           <bool>false</bool>
-          </property>
-          <property name="notchTarget">
-           <double>26.000000000000000</double>
-          </property>
-          <property name="notchesVisible">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="downButton">
-       <property name="text">
-        <string>Зменшити</string>
+     <item row="3" column="3">
+      <widget class="QComboBox" name="speed_comboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Поточна позиція:</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="current_position_label">
-       <property name="text">
-        <string>0</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="steplabel">
-       <property name="text">
-        <string>Кроки</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QComboBox" name="step_comboBox">
-       <property name="frame">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
+     <item row="3" column="2">
       <widget class="QLabel" name="speedlabel">
        <property name="text">
         <string>Швидкість</string>
@@ -143,8 +109,22 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="2">
-      <widget class="QComboBox" name="speed_comboBox"/>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="downButton">
+       <property name="text">
+        <string>Зменшити</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="steplabel">
+       <property name="text">
+        <string>Кроки</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -169,16 +149,16 @@
        <x>10</x>
        <y>30</y>
        <width>391</width>
-       <height>211</height>
+       <height>206</height>
       </rect>
      </property>
     </widget>
     <widget class="QPushButton" name="addButton">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>245</y>
-       <width>93</width>
+       <x>145</x>
+       <y>240</y>
+       <width>86</width>
        <height>28</height>
       </rect>
      </property>
@@ -189,9 +169,9 @@
     <widget class="QPushButton" name="editButton">
      <property name="geometry">
       <rect>
-       <x>155</x>
-       <y>245</y>
-       <width>101</width>
+       <x>235</x>
+       <y>240</y>
+       <width>81</width>
        <height>28</height>
       </rect>
      </property>
@@ -202,14 +182,27 @@
     <widget class="QPushButton" name="deleteButton">
      <property name="geometry">
       <rect>
-       <x>310</x>
-       <y>245</y>
-       <width>93</width>
+       <x>322</x>
+       <y>240</y>
+       <width>81</width>
        <height>28</height>
       </rect>
      </property>
      <property name="text">
       <string>Видалити</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="runButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Виконати</string>
      </property>
     </widget>
    </widget>

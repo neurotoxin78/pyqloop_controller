@@ -2,11 +2,11 @@ import gc
 import sys
 import json as jconf
 import requests
+from collections import defaultdict
 from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtCore import (QDate, QDateTime, QRegExp, QSortFilterProxyModel, Qt,
-                          QTime)
-
+from PyQt5.QtCore import Qt
+from time import sleep
 
 def extended_exception_hook(exctype, value, traceback):
     # Print the error and traceback
@@ -104,6 +104,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.configure()
         self.bandTreeViewConfig()
 
+    def store_bandTree(self):
+        data = []
+        for row in range(self.model.rowCount()):
+            data.append([])
+            for column in range(self.model.columnCount()):
+                index = self.model.index(row, column)
+                data[row].append(str(self.model.data(index)))
+        # print(data)
+        for item in data:
+            l  =  item
+            print(l)
+
     def store_defaults(self):
         defaults = {"defaults": {"step": self.step, "speed": self.speed}}
         defaults = jconf.dumps(defaults, indent=4)
@@ -140,9 +152,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def bandTreeViewConfig(self):
         self.bandtreeView.setRootIsDecorated(False)
         self.bandtreeView.setAlternatingRowColors(True)
-        model = self.createBandTreeModel(self)
-        self.bandtreeView.setModel(model)
-        self.addTreeItem(model, '40M', '8500', '7,000 - 7,200')
+        self.model = self.createBandTreeModel(self)
+        self.bandtreeView.setModel(self.model)
 
     def createBandTreeModel(self, parent):
         model = QStandardItemModel(0, 3, parent)
@@ -161,20 +172,45 @@ class MainWindow(QtWidgets.QMainWindow):
         self.upButton.clicked.connect(self.upButton_click)
         self.downButton.clicked.connect(self.downButton_click)
         self.connectButton.clicked.connect(self.connectButton_click)
-        self.fineTuning.valueChanged.connect(self.fineTune)
         self.parkButton.clicked.connect(self.parkButton_click)
         self.addButton.clicked.connect(self.addButton_click)
+        self.bandtreeView.clicked.connect(self.getValue)
+        self.runButton.clicked.connect(self.runButton_click)
         self.comboInit()
 
+    def runButton_click(self):
+        rows = {index.row() for index in self.bandtreeView.selectionModel().selectedIndexes()}
+        output = []
+        for row in rows:
+            row_data = []
+            for column in range(self.bandtreeView.model().columnCount()):
+                index = self.bandtreeView.model().index(row, column)
+                row_data.append(index.data())
+            output.append(row_data)
+        if self.current_position > int(output[0][1]):
+            difference = self.current_position - int(output[0][1]) - 1
+            print(f"minus: {difference}")
+            steps =  round(int(difference) / 10)
+            for i in range(int(steps)):
+                self.moveTo(1, 10, self.speed)
+                sleep(0.01)
+        else:
+            difference = int(output[0][1]) - self.current_position + 1
+            print(f"plus {difference}")
+            steps =  round(int(difference) / 10)
+            for i in range(int(steps)):
+                self.moveTo(0, 10, self.speed)
+                sleep(0.01)
+    def getValue(self, value):
+        self.current_treeIndex = value
     def addButton_click(self):
         self.add_dialog.set_fields_values("Діапазон", self.current_position_label.text(), "")
         answer = self.add_dialog.exec()
         if answer == AddDialog.Accepted:
-            print(self.add_dialog.get_fields_values())
+            values = self.add_dialog.get_fields_values()
+            self.addTreeItem(self.model, values['band'], values['step'], values['desc'])
         else:
             print("Cancel")
-
-
 
     def get_info(self):
         if self.connected:
@@ -209,8 +245,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setStyleSheet(fh.read())
 
     def comboInit(self):
-        step_items = ["1", "5", "10", "25", "50", "100", "250", "500"]
-        speed_items = ["5", "10", "16"]
+        step_items = ["10", "20", "50", "100", "200", "500"]
+        speed_items = ["10", "15"]
         self.step_comboBox.addItems(step_items)
         self.step_comboBox.currentIndexChanged.connect(self.step_change)
         self.speed_comboBox.addItems(speed_items)
@@ -228,18 +264,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def upButton_click(self):
         self.moveTo(0, self.step, self.speed)
-        self.fineTuning.setValue(int(self.current_position))
+
 
     def downButton_click(self):
         self.moveTo(1, self.step, self.speed)
         self.fineTuning.setValue(int(self.current_position))
-
-    def fineTune(self):
-        if self.connected:
-            if self.fineTuning.value() > self.current_position:
-                self.moveTo(0, 1, 15)
-            else:
-                self.moveTo(1, 1, 15)
 
     def step_change(self):
         self.step = self.step_comboBox.currentText()
@@ -261,6 +290,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event):
         print("Closing")
         self.store_defaults()
+        self.store_bandTree()
         print("Storing defaults")
         event.accept()
         sys.exit()
