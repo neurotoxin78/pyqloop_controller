@@ -37,6 +37,14 @@ class Jconfig():
     def __init__(self):
         pass
 
+    def get_stored_bands(self):
+        try:
+            with open("bands.json", "r") as f:
+                config = jconf.load(f)
+            return config
+        except:
+            raise FileNotFoundError("File bands.json not found.")
+
     def get_config(self):
         try:
             with open("api.json", "r") as f:
@@ -103,18 +111,36 @@ class MainWindow(QtWidgets.QMainWindow):
         self.initUI()
         self.configure()
         self.bandTreeViewConfig()
+        self.load_bandTree()
+
+    def load_bandTree(self):
+        config = self.jconfig.get_stored_bands()
+        if "bands" in config:
+            bands = config["bands"]
+            print(bands)
+            for key in bands:
+                self.addTreeItem(self.model, bands[key]['band'], bands[key]['step'], bands[key]['desc'])
+        else:
+            raise KeyError("Error: Key 'bands' not found in config file.")
 
     def store_bandTree(self):
         data = []
+        d_dict = {}
+        d_dict['bands'] = {}
         for row in range(self.model.rowCount()):
             data.append([])
+            d_dict['bands'][row] = {}
             for column in range(self.model.columnCount()):
                 index = self.model.index(row, column)
                 data[row].append(str(self.model.data(index)))
-        # print(data)
-        for item in data:
-            l  =  item
-            print(l)
+                if column == 0:
+                    d_dict['bands'][row]['band'] = str(self.model.data(index))
+                elif column == 1:
+                    d_dict['bands'][row]['step'] = str(self.model.data(index))
+                else:
+                    d_dict['bands'][row]['desc'] = str(self.model.data(index))
+        with open("bands.json", "w") as fp:
+            jconf.dump(d_dict, fp)
 
     def store_defaults(self):
         defaults = {"defaults": {"step": self.step, "speed": self.speed}}
@@ -179,28 +205,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.comboInit()
 
     def runButton_click(self):
-        rows = {index.row() for index in self.bandtreeView.selectionModel().selectedIndexes()}
-        output = []
-        for row in rows:
-            row_data = []
-            for column in range(self.bandtreeView.model().columnCount()):
-                index = self.bandtreeView.model().index(row, column)
-                row_data.append(index.data())
-            output.append(row_data)
-        if self.current_position > int(output[0][1]):
-            difference = self.current_position - int(output[0][1]) - 1
-            print(f"minus: {difference}")
-            steps =  round(int(difference) / 10)
-            for i in range(int(steps)):
-                self.moveTo(1, 10, self.speed)
-                sleep(0.01)
-        else:
-            difference = int(output[0][1]) - self.current_position + 1
-            print(f"plus {difference}")
-            steps =  round(int(difference) / 10)
-            for i in range(int(steps)):
-                self.moveTo(0, 10, self.speed)
-                sleep(0.01)
+        if self.connected:
+            rows = {index.row() for index in self.bandtreeView.selectionModel().selectedIndexes()}
+            output = []
+            for row in rows:
+                row_data = []
+                for column in range(self.bandtreeView.model().columnCount()):
+                    index = self.bandtreeView.model().index(row, column)
+                    row_data.append(index.data())
+                output.append(row_data)
+            if self.current_position > int(output[0][1]):
+                difference = self.current_position - int(output[0][1]) - 1
+                print(f"minus: {difference}")
+                steps =  round(int(difference) / 10)
+                for i in range(int(steps)):
+                    self.moveTo(1, 10, self.speed)
+                    sleep(0.01)
+            else:
+                difference = int(output[0][1]) - self.current_position + 1
+                print(f"plus {difference}")
+                steps =  round(int(difference) / 10)
+                for i in range(int(steps)):
+                    self.moveTo(0, 10, self.speed)
+                    sleep(0.01)
     def getValue(self, value):
         self.current_treeIndex = value
     def addButton_click(self):
@@ -266,7 +293,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def downButton_click(self):
         self.moveTo(1, self.step, self.speed)
-        self.fineTuning.setValue(int(self.current_position))
 
     def step_change(self):
         self.step = self.step_comboBox.currentText()
@@ -288,8 +314,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event):
         print("Closing")
         self.store_defaults()
-        self.store_bandTree()
         print("Storing defaults")
+        self.store_bandTree()
+        print("Storing bands tree")
         event.accept()
         sys.exit()
 
